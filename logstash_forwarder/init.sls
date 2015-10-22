@@ -5,12 +5,6 @@
 include:
   - .repo
 
-logstash-forwarder-pkg:
-  pkg.latest:
-    - name: {{logstash_forwarder.pkg}}
-    - require:
-      - pkgrepo: logstash-forwarder-repo
-
 {%- if logstash_forwarder.cert_contents is defined %}
 logstash-forwarder-cert:
   file.managed:
@@ -35,18 +29,11 @@ logstash-forwarder-config:
     - watch_in:
       - service: logstash-forwarder-svc
 
-logstash-forwarder-svc:
-  service:
-    - name: {{logstash_forwarder.svc}}
-    - running
-    - enable: true
+logstash-forwarder:
+  pkg.latest:
+    - name: {{logstash_forwarder.pkg}}
     - require:
-      - pkg: logstash-forwarder-pkg
-      {%- if logstash_forwarder.cert_contents is defined %}
-      - file: logstash-forwarder-cert
-      {%- endif %}
-
-logstash-forwarder-init:
+      - pkgrepo: logstash-forwarder-repo
   file.managed:
     - name: /etc/init.d/{{logstash_forwarder.svc}}
     - user: root
@@ -55,7 +42,16 @@ logstash-forwarder-init:
     - source: {{ logstash_forwarder.init_file }}
     - template: jinja
     - watch_in:
-      - service: logstash-forwarder-svc
+      - service: logstash-forwarder
     - require:
-      - pkg: logstash-forwarder-pkg
+      - pkg: logstash-forwarder
+  service:
+    - name: {{logstash_forwarder.svc}}
+    - running
+    - enable: true
+    - require:
+      - pkg: logstash-forwarder
+      {%- if logstash_forwarder.cert_contents is defined %}
+      - file: logstash-forwarder-cert
+      {%- endif %}
 {%- endif %}
