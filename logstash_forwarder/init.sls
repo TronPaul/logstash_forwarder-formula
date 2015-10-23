@@ -15,7 +15,7 @@ logstash-forwarder-cert:
     - mode: 664
     - template: jinja
     - watch_in:
-      - service: logstash-forwarder-svc
+      - service: logstash-forwarder
 {%- endif %}
 
 logstash-forwarder-config:
@@ -27,7 +27,7 @@ logstash-forwarder-config:
     - source: salt://logstash_forwarder/files/logstash-forwarder
     - template: jinja
     - watch_in:
-      - service: logstash-forwarder-svc
+      - service: logstash-forwarder
 
 logstash-forwarder:
   pkg.latest:
