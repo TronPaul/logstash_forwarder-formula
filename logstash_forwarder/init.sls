@@ -19,13 +19,13 @@ logstash-forwarder-cert:
 {%- endif %}
 
 logstash-forwarder-config:
-  file.managed:
+  file.serialize:
     - name: /etc/logstash-forwarder
     - user: root
     - group: root
     - mode: 644
-    - source: salt://logstash_forwarder/files/logstash-forwarder
-    - template: jinja
+    - dataset_pillar: logstash_forwarder:config
+    - formatter: json
     - watch_in:
       - service: logstash-forwarder
 
